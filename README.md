@@ -1,29 +1,43 @@
-# Study Buddy – AI tutor for school kids
+# GapFinder AI
 
-Live demo: https://edu-buddy-hghkugcf5-cc-fraud-detection.vercel.app
+**Live demo:** https://edu-buddy-mu.vercel.app/
 
-## What it does
-- Pick a class (3–10) and the tutor adapts its language and examples
-- Explain mode: clear, simple explanations
-- Guide me mode (Socratic): asks guiding questions instead of giving answers
-- Quiz me: generates 3 questions on what was just discussed
-- Kid-safe system prompt: stays on educational topics
+An AI-powered study app that finds what a student doesn't understand, explains why, and tells them what to study next.
+
+## Features (implemented)
+1. **Upload study materials**: syllabus, notes, textbooks and past papers (PDF or text)
+2. **Topic map**: organizes material into topics and subtopics, rates importance, and maps past exam questions to topics
+3. **Diagnostic quiz with RAG**: questions are generated from the uploaded material using retrieval, and each answer shows its source excerpt
+4. **Answer evaluation**: marks answers right or wrong and explains the mistakes
+5. **Knowledge gap detection**: classifies each topic as Weak, Medium or Strong
+6. **Personalized revision plan**: prioritizes by topic importance and weakness, based on hours per day and number of days
+7. **Progress tracking**: retest with new questions, compare attempts, and the plan updates automatically
+8. **Study assistant**: answers only from the uploaded material, with chunk citations
+
+## Scope decisions (not implemented)
+- **Login and database**: student data (materials, topic map, attempts, plan) is saved in the browser's localStorage instead of a backend. A real account system would be the next step.
+- **Embedding-based retrieval**: retrieval uses lightweight keyword scoring (TF-IDF style) so the whole app runs on free tiers with no vector database.
+
+## How it works
+Uploaded text is split into chunks. The topic map is generated from those chunks. For each quiz, the most relevant chunks per topic are retrieved and passed to the model, which writes questions grounded only in them. Quiz scores per topic become Weak/Medium/Strong levels, which feed the revision planner. The assistant retrieves chunks for each question and is instructed to answer only from them.
 
 ## Tech stack
-Next.js, Vercel AI SDK, Groq (open-source GPT-OSS model), deployed on Vercel
+- Next.js (App Router) and React
+- Vercel AI SDK with Groq (open-source GPT-OSS model)
+- unpdf for PDF text extraction
+- Deployed on Vercel
 
 ## Run locally
-1. git clone https://github.com/asreekar-06/edu-buddy.git
-2. cd edu-buddy && npm install
-3. Create .env.local with: GROQ_API_KEY=your_key_here (free key from console.groq.com)
-4. npm run dev, then open http://localhost:3000
+1. `git clone https://github.com/asreekar-06/GapFinder-AI.git`
+2. `cd GapFinder-AI`
+3. `npm install`
+4. Create a `.env.local` file containing: `GROQ_API_KEY=your_key_here` (free key from https://console.groq.com)
+5. `npm run dev`, then open http://localhost:3000
 
-## Design decisions
-- Socratic mode because learning sticks better when students think
-- Grade-level prompting so the same question gets age-appropriate answers
-- System prompt restricts the bot to educational topics for child safety
+## Limitations
+- PDFs larger than about 4 MB may fail on the free Vercel plan; text PDFs work best (scanned images are not read)
+- Keyword retrieval can miss paraphrased questions
+- Free-tier AI limits can make generation slow at peak times
 
-## Limitations and next steps
-- No login or saved chat history yet
-- Topic-specific quizzes with scoring
-- Parent/teacher dashboard
+## Author
+Sreekar (GitHub: asreekar-06)
